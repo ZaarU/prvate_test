@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 
-import 'product.dart';
-import 'product_card.dart';
+import 'package:product_catalog/domain/models/product.dart';
+import 'package:product_catalog/presentation/widgets/product_thumbnail.dart';
 
 class ProductTable extends StatelessWidget {
-  const ProductTable({required this.products, super.key});
+  const ProductTable({
+    required this.products,
+    required this.onProductTap,
+    super.key,
+  });
 
   final List<Product> products;
+  final ValueChanged<int> onProductTap;
 
   @override
   Widget build(BuildContext context) {
@@ -34,43 +39,46 @@ class ProductTable extends StatelessWidget {
           decoration: BoxDecoration(
             border: Border(bottom: BorderSide(color: theme.dividerColor)),
           ),
-          child: _TableRow(
-            product: Row(
-              children: [
-                SizedBox.square(
-                  dimension: 40,
-                  child: ProductThumbnail(url: product.thumbnail),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        product.title,
-                        style: theme.textTheme.titleSmall,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      Text(
-                        product.description,
-                        style: theme.textTheme.bodySmall,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
+          child: InkWell(
+            onTap: () => onProductTap(product.id),
+            child: _TableRow(
+              product: Row(
+                children: [
+                  SizedBox.square(
+                    dimension: 40,
+                    child: ProductThumbnail(url: product.thumbnail),
                   ),
-                ),
-              ],
-            ),
-            price: Text(
-              '\$${product.price.toStringAsFixed(2)}',
-              textAlign: TextAlign.end,
-            ),
-            rating: Semantics(
-              label: 'Rating $rating out of 5',
-              excludeSemantics: true,
-              child: Text(rating, textAlign: TextAlign.end),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          product.title,
+                          style: theme.textTheme.titleSmall,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        Text(
+                          product.description,
+                          style: theme.textTheme.bodySmall,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              price: Text(
+                '\$${product.price.toStringAsFixed(2)}',
+                textAlign: TextAlign.end,
+              ),
+              rating: Semantics(
+                label: 'Rating $rating out of 5',
+                excludeSemantics: true,
+                child: Text(rating, textAlign: TextAlign.end),
+              ),
             ),
           ),
         );

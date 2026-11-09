@@ -1,4 +1,4 @@
-import 'product.dart';
+import 'package:product_catalog/domain/models/product.dart';
 
 enum CatalogStatus {
   waitingForSearch,

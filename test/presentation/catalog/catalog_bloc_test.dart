@@ -1,10 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:product_catalog/catalog/catalog_bloc.dart';
-import 'package:product_catalog/catalog/catalog_state.dart';
-import 'package:product_catalog/catalog/product.dart';
-import 'package:product_catalog/catalog/product_repository.dart';
+import 'package:product_catalog/presentation/catalog/catalog_bloc.dart';
+import 'package:product_catalog/presentation/catalog/catalog_state.dart';
+import 'package:product_catalog/domain/models/product.dart';
+import 'package:product_catalog/domain/models/product_details.dart';
+import 'package:product_catalog/domain/repositories/product_repository.dart';
 
 void main() {
   testWidgets('debounces search and discards an older response', (
@@ -83,6 +84,9 @@ void main() {
 
 class _ControlledRepository implements ProductRepository {
   final requests = <_Request>[];
+
+  @override
+  Future<ProductDetails> fetchById(int id) => throw UnsupportedError('Details');
 
   @override
   Future<ProductPage> fetchPage({

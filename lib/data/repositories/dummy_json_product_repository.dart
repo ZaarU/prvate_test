@@ -1,8 +1,10 @@
 import 'package:dio/dio.dart';
 
-import 'dummy_json_dio_config.dart';
-import 'product.dart';
-import 'product_repository.dart';
+import 'package:product_catalog/data/mappers/dummy_json_product_mapper.dart';
+import 'package:product_catalog/data/network/dummy_json_dio_config.dart';
+import 'package:product_catalog/domain/models/product.dart';
+import 'package:product_catalog/domain/models/product_details.dart';
+import 'package:product_catalog/domain/repositories/product_repository.dart';
 
 class DummyJsonProductRepository implements ProductRepository {
   DummyJsonProductRepository({Dio? dio})
@@ -17,6 +19,16 @@ class DummyJsonProductRepository implements ProductRepository {
           );
 
   final Dio _dio;
+
+  @override
+  Future<ProductDetails> fetchById(int id) async {
+    final response = await _dio.get<Map<String, dynamic>>('/products/$id');
+    final data = response.data;
+    if (data == null) {
+      throw const FormatException('Missing product response body');
+    }
+    return productDetailsFromJson(data);
+  }
 
   @override
   Future<ProductPage> fetchPage({
@@ -46,7 +58,7 @@ class DummyJsonProductRepository implements ProductRepository {
 
     final products = (data['products'] as List).cast<Map<String, dynamic>>();
     return ProductPage(
-      products: products.map(Product.fromJson),
+      products: products.map(productFromJson),
       total: data['total'] as int,
       skip: data['skip'] as int,
     );

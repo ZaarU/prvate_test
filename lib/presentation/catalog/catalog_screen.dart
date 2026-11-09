@@ -2,11 +2,12 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
-import 'catalog_bloc.dart';
-import 'catalog_state.dart';
-import 'product_card.dart';
-import 'product_repository.dart';
-import 'product_table.dart';
+import 'package:product_catalog/presentation/catalog/catalog_bloc.dart';
+import 'package:product_catalog/presentation/catalog/catalog_state.dart';
+import 'package:product_catalog/presentation/catalog/widgets/product_card.dart';
+import 'package:product_catalog/presentation/product_details/product_details_screen.dart';
+import 'package:product_catalog/domain/repositories/product_repository.dart';
+import 'package:product_catalog/presentation/catalog/widgets/product_table.dart';
 
 class CatalogScreen extends StatefulWidget {
   const CatalogScreen({required this.repository, super.key});
@@ -41,6 +42,15 @@ class _CatalogScreenState extends State<CatalogScreen> {
   void _search(String text) => _bloc.add(CatalogSearchChanged(text));
 
   void _retry() => _bloc.add(const CatalogRetryRequested());
+
+  void _openProduct(int id) {
+    Navigator.of(context).push<void>(
+      MaterialPageRoute(
+        builder: (context) =>
+            ProductDetailsScreen(id: id, repository: widget.repository),
+      ),
+    );
+  }
 
   void _requestNextPageIfNeeded() {
     if (_scrollController.hasClients &&
@@ -139,7 +149,10 @@ class _CatalogScreenState extends State<CatalogScreen> {
         SliverPadding(
           padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
           sliver: _showTable
-              ? ProductTable(products: state.products)
+              ? ProductTable(
+                  products: state.products,
+                  onProductTap: _openProduct,
+                )
               : SliverGrid.builder(
                   gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
                     maxCrossAxisExtent: 240 * textScale.clamp(1, 1.5),
@@ -149,8 +162,13 @@ class _CatalogScreenState extends State<CatalogScreen> {
                     crossAxisSpacing: 12,
                   ),
                   itemCount: state.products.length,
-                  itemBuilder: (context, index) =>
-                      ProductCard(product: state.products[index]),
+                  itemBuilder: (context, index) {
+                    final product = state.products[index];
+                    return ProductCard(
+                      product: product,
+                      onTap: () => _openProduct(product.id),
+                    );
+                  },
                 ),
         ),
         if (state.status == CatalogStatus.loadingMore)

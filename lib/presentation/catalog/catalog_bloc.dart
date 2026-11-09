@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 
-import 'catalog_state.dart';
-import 'product.dart';
-import 'product_repository.dart';
+import 'package:product_catalog/presentation/catalog/catalog_state.dart';
+import 'package:product_catalog/domain/models/product.dart';
+import 'package:product_catalog/domain/repositories/product_repository.dart';
 
 sealed class CatalogEvent {
   const CatalogEvent();

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import 'catalog/catalog_screen.dart';
-import 'catalog/dummy_json_product_repository.dart';
-import 'catalog/product_repository.dart';
+import 'package:product_catalog/presentation/catalog/catalog_screen.dart';
+import 'package:product_catalog/data/repositories/dummy_json_product_repository.dart';
+import 'package:product_catalog/domain/repositories/product_repository.dart';
 
 void main() {
   runApp(ProductCatalogApp(repository: DummyJsonProductRepository()));
