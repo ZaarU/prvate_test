@@ -22,3 +22,27 @@ While online, the app saves catalog and search result pages to SQLite using
 `sqflite`. If the connection fails, you can reopen previously loaded pages
 for the same search query and view details for cached products. Cached data
 persists across app restarts. The app loads photos over the network.
+
+## Test product deep links
+
+The app opens a product directly from `productcatalog://app/products/<id>`.
+Install the app on the emulator or simulator before running these commands.
+
+### Android emulator
+
+```sh
+adb shell am force-stop com.example.product_catalog
+adb shell am start -W -a android.intent.action.VIEW -c android.intent.category.BROWSABLE -d "productcatalog://app/products/1" -p com.example.product_catalog
+adb shell am start -W -a android.intent.action.VIEW -c android.intent.category.BROWSABLE -d "productcatalog://app/products/16" -p com.example.product_catalog
+```
+
+### iOS simulator
+
+```sh
+xcrun simctl terminate booted com.example.productCatalog
+xcrun simctl openurl booted "productcatalog://app/products/1"
+xcrun simctl openurl booted "productcatalog://app/products/16"
+```
+
+The first link opens product 1 from a cold start. The second replaces it
+with product 16 while the app is running. The Back button returns to the catalog.

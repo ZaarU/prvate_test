@@ -5,14 +5,18 @@ import 'package:flutter/material.dart';
 import 'package:product_catalog/presentation/catalog/catalog_bloc.dart';
 import 'package:product_catalog/presentation/catalog/catalog_state.dart';
 import 'package:product_catalog/presentation/catalog/widgets/product_card.dart';
-import 'package:product_catalog/presentation/product_details/product_details_screen.dart';
 import 'package:product_catalog/domain/repositories/product_repository.dart';
 import 'package:product_catalog/presentation/catalog/widgets/product_table.dart';
 
 class CatalogScreen extends StatefulWidget {
-  const CatalogScreen({required this.repository, super.key});
+  const CatalogScreen({
+    required this.repository,
+    required this.onProductTap,
+    super.key,
+  });
 
   final ProductRepository repository;
+  final ValueChanged<int> onProductTap;
 
   @override
   State<CatalogScreen> createState() => _CatalogScreenState();
@@ -42,15 +46,6 @@ class _CatalogScreenState extends State<CatalogScreen> {
   void _search(String text) => _bloc.add(CatalogSearchChanged(text));
 
   void _retry() => _bloc.add(const CatalogRetryRequested());
-
-  void _openProduct(int id) {
-    Navigator.of(context).push<void>(
-      MaterialPageRoute(
-        builder: (context) =>
-            ProductDetailsScreen(id: id, repository: widget.repository),
-      ),
-    );
-  }
 
   void _requestNextPageIfNeeded() {
     if (_scrollController.hasClients &&
@@ -151,7 +146,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
           sliver: _showTable
               ? ProductTable(
                   products: state.products,
-                  onProductTap: _openProduct,
+                  onProductTap: widget.onProductTap,
                 )
               : SliverGrid.builder(
                   gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
@@ -166,7 +161,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
                     final product = state.products[index];
                     return ProductCard(
                       product: product,
-                      onTap: () => _openProduct(product.id),
+                      onTap: () => widget.onProductTap(product.id),
                     );
                   },
                 ),

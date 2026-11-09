@@ -1,18 +1,53 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:product_catalog/presentation/catalog/catalog_screen.dart';
 import 'package:product_catalog/domain/models/product.dart';
 import 'package:product_catalog/domain/models/product_details.dart';
 import 'package:product_catalog/domain/repositories/product_repository.dart';
+import 'package:product_catalog/main.dart';
 
 void main() {
+  testWidgets('opens cold and warm deep links and returns to the catalog', (
+    tester,
+  ) async {
+    tester.binding.platformDispatcher.defaultRouteNameTestValue =
+        'productcatalog://app/products/42';
+    addTearDown(
+      tester.binding.platformDispatcher.clearDefaultRouteNameTestValue,
+    );
+    final repository = _CatalogRepository();
+    await tester.pumpWidget(ProductCatalogApp(repository: repository));
+    await tester.pumpAndSettle();
+    expect(repository.detailRequests, [42]);
+    expect(find.text('Detailed product 42'), findsOneWidget);
+
+    final router = tester.widget<Router<Object>>(find.byType(Router<Object>));
+    final provider =
+        router.routeInformationProvider! as PlatformRouteInformationProvider;
+    await provider.didPushRouteInformation(
+      RouteInformation(uri: Uri.parse('productcatalog://app/products/7')),
+    );
+    await tester.pumpAndSettle();
+    expect(repository.detailRequests, [42, 7]);
+    expect(find.text('Detailed product 7'), findsOneWidget);
+    expect(find.text('Detailed product 42'), findsNothing);
+
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+    expect(find.text('Product Catalog'), findsOneWidget);
+
+    await provider.didPushRouteInformation(
+      RouteInformation(uri: Uri.parse('productcatalog://app/products/invalid')),
+    );
+    await tester.pumpAndSettle();
+    expect(repository.detailRequests, [42, 7]);
+    expect(find.text('Product Catalog'), findsOneWidget);
+  });
+
   testWidgets('opens details from both layouts and retries a failed load', (
     tester,
   ) async {
     final repository = _CatalogRepository()..failNextDetails = true;
-    await tester.pumpWidget(
-      MaterialApp(home: CatalogScreen(repository: repository)),
-    );
+    await tester.pumpWidget(ProductCatalogApp(repository: repository));
     await tester.pumpAndSettle();
 
     await tester.tap(find.text('Product 2'));
@@ -40,9 +75,7 @@ void main() {
     tester,
   ) async {
     final repository = _CatalogRepository();
-    await tester.pumpWidget(
-      MaterialApp(home: CatalogScreen(repository: repository)),
-    );
+    await tester.pumpWidget(ProductCatalogApp(repository: repository));
     await tester.pumpAndSettle();
 
     await tester.enterText(find.byType(EditableText), 'phone');
