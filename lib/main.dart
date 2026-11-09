@@ -1,18 +1,24 @@
 import 'package:flutter/material.dart';
 
+import 'catalog/catalog_screen.dart';
+import 'catalog/dummy_json_product_repository.dart';
+import 'catalog/product_repository.dart';
+
 void main() {
-  runApp(const ProductCatalogApp());
+  runApp(ProductCatalogApp(repository: DummyJsonProductRepository()));
 }
 
 class ProductCatalogApp extends StatelessWidget {
-  const ProductCatalogApp({super.key});
+  const ProductCatalogApp({required this.repository, super.key});
+
+  final ProductRepository repository;
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       title: 'Product Catalog',
       debugShowCheckedModeBanner: false,
-      home: Scaffold(body: Center(child: Text('Product Catalog'))),
+      home: CatalogScreen(repository: repository),
     );
   }
 }
