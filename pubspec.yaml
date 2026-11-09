@@ -8,6 +8,7 @@ environment:
   flutter: '>=3.47.9'
 
 dependencies:
+  bloc: ^9.2.1
   dio: ^5.11.1
   flutter:
     sdk: flutter
