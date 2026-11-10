@@ -19,9 +19,10 @@ Run `flutter analyze` to check the project for static analysis issues.
 ## Offline mode
 
 While online, the app saves catalog and search result pages to SQLite using
-`sqflite`. If the connection fails, you can reopen previously loaded pages
-for the same search query and view details for cached products. Cached data
-persists across app restarts. The app loads photos over the network.
+`sqflite`. If the connection fails, the app uses previously loaded pages
+and can search cached product titles when a page is missing. You can search
+with a new query and open details for cached products. Cached data persists
+across app restarts. The app loads photos over the network.
 
 ## Test product deep links
 
